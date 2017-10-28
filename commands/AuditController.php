@@ -197,14 +197,15 @@ BEGIN
 	DECLARE @beforeJson nvarchar(MAX),
 			@afterJson nvarchar(MAX),
 			@sql nvarchar(MAX),
-			@action char(1);
+			@action char(1)
+			@primary NVARCHAR(255);
 			
 	SET @action = 'I';
 	IF EXISTS(SELECT * FROM DELETED)
 	BEGIN
 		SET @action =
 			CASE
-				WHEN EXISTS(SELECT * FROM INSERTED) THEN 'U',
+				WHEN EXISTS(SELECT * FROM INSERTED) THEN 'U'
 				ELSE 'D'
 		  	END
 	END
@@ -223,6 +224,7 @@ BEGIN
 
 	SET @beforeJson = (SELECT * FROM DELETED FOR JSON AUTO)
 	SET @afterJson = (SELECT * FROM INSERTED FOR JSON AUTO)
+	SET @primary = (SELECT CAST(COALESCE(DELETED.[id], INSERTED.[id]) AS NVARCHAR(255)) FROM DELETED, INSERTED)
 			
 	INSERT INTO {{%audit_logged_actions}} (
 		[[schema_name]],
@@ -235,7 +237,7 @@ BEGIN
 	) VALUES (
 		'{$tableSchema->schemaName}',
 		'{$tableSchema->name}',
-		IIF(DELETED.[[$primary]], DELETED.[[$primary]], INSERTED.[[$primary]]),
+		@primary,
 		@action,
 		@sql,
 		@beforeJson,
