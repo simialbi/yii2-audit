@@ -197,7 +197,7 @@ BEGIN
 	DECLARE @beforeJson nvarchar(MAX),
 			@afterJson nvarchar(MAX),
 			@sql nvarchar(MAX),
-			@action char(1)
+			@action char(1),
 			@primary NVARCHAR(255);
 			
 	SET @action = 'I';
