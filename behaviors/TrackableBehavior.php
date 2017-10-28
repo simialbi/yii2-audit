@@ -8,8 +8,18 @@
 
 namespace simialbi\yii2\audit\behaviors;
 
+use simialbi\yii2\audit\models\LogAction;
 use yii\base\Behavior;
+use yii\db\ActiveRecord;
+use yii\db\AfterSaveEvent;
+use Yii;
 
+/**
+ * Class TrackableBehavior
+ * @package simialbi\yii2\audit\behaviors
+ *
+ * @property \yii\db\ActiveRecord $owner
+ */
 class TrackableBehavior extends Behavior {
 	const MODE_TRIGGER = 'trigger';
 	const MODE_EVENT = 'event';
@@ -23,5 +33,94 @@ class TrackableBehavior extends Behavior {
 	/**
 	 * @var string Change log table name, may contain schema name.
 	 */
-	public $auditTableName = '';
+	public $auditTableName = '{{%audit_logged_actions}}';
+
+
+	/**
+	 * @inheritdoc
+	 */
+	public function events() {
+		if ($this->mode === self::MODE_TRIGGER) {
+			return [
+				ActiveRecord::EVENT_AFTER_INSERT => 'updateUser',
+				ActiveRecord::EVENT_AFTER_UPDATE => 'updateUser',
+				ActiveRecord::EVENT_AFTER_DELETE => 'updateUser'
+			];
+		}
+
+		return [
+			ActiveRecord::EVENT_AFTER_INSERT => 'logAction',
+			ActiveRecord::EVENT_AFTER_UPDATE => 'logAction',
+			ActiveRecord::EVENT_AFTER_DELETE => 'logAction'
+		];
+	}
+
+	/**
+	 * @param AfterSaveEvent $event
+	 */
+	protected function updateUser($event) {
+		$model   = $this->owner;
+		$primary = ($event->name === ActiveRecord::EVENT_AFTER_INSERT)
+			? $model->getPrimaryKey(false)
+			: $model->getOldPrimaryKey(false);
+		$schema  = $model::getTableSchema();
+		if (is_array($primary)) {
+			$primary = $primary[0];
+		}
+		$logAction = LogAction::find()->where([
+			'schema_name' => $schema->schemaName,
+			'table_name'  => $schema->name,
+			'relation_id' => $primary,
+			'changed_by'  => null
+		])->orderBy([
+			'changed_at' => SORT_DESC
+		])->one();
+		$userid    = (Yii::$app->user && !Yii::$app->user->isGuest) ? Yii::$app->user->id : null;
+
+		if (!$logAction || !$userid) {
+			return;
+		}
+
+		$logAction->changed_by = $userid;
+		$logAction->save();
+	}
+
+	/**
+	 * Event based audit action logging
+	 *
+	 * @param AfterSaveEvent $event
+	 *
+	 * @return boolean
+	 */
+	protected function logAction($event) {
+		$model  = $this->owner;
+		$schema = $model::getTableSchema();
+		$action = null;
+		$query  = null;
+		switch ($event->name) {
+			case ActiveRecord::EVENT_AFTER_INSERT:
+				$action = 'I';
+				$query  = $model::getDb()->createCommand()->insert($schema->name, $model->attributes)->rawSql;
+				break;
+			case ActiveRecord::EVENT_AFTER_UPDATE:
+				$action = 'U';
+				$query  = $model::getDb()->createCommand()->update($schema->name, $model->attributes, $model->getOldPrimaryKey(true))->rawSql;
+				break;
+			case ActiveRecord::EVENT_AFTER_DELETE:
+				$action = 'D';
+				$query  = $model::getDb()->createCommand()->delete($schema->name, $model->getOldPrimaryKey(true))->rawSql;
+				break;
+		}
+
+		$logAction = new LogAction([
+			'schema_name' => $schema->schemaName,
+			'table_name'  => $schema->name,
+			'action'      => $action,
+			'query'       => $query,
+			'data_before' => $model->oldAttributes,
+			'data_after'  => $model->attributes
+		]);
+
+		return $logAction->save();
+	}
 }

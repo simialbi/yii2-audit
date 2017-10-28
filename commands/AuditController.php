@@ -24,11 +24,13 @@ class AuditController extends Controller {
 	public function actionAddTrigger($modelName = '') {
 		if (!class_exists($modelName)) {
 			$this->stderr("Class '$modelName' does not exists", Console::FG_RED);
+
 			return self::EXIT_CODE_ERROR;
 		}
 		$model = new $modelName;
 		if (!($model instanceof \yii\db\ActiveRecord)) {
 			$this->stderr("Class '$modelName' must extend '\yii\db\ActiveRecord'", Console::FG_RED);
+
 			return self::EXIT_CODE_ERROR;
 		}
 
@@ -49,6 +51,7 @@ class AuditController extends Controller {
 			case 'oci':
 			default:
 				$this->stderr("Driver '{$db->driverName}' is not yet supported", Console::FG_YELLOW);
+
 				return self::EXIT_CODE_ERROR;
 		}
 
@@ -56,10 +59,12 @@ class AuditController extends Controller {
 			$db->createCommand($trigger)->execute();
 		} catch (Exception $e) {
 			$this->stderr("An error occured: '".$e->getMessage()."'", Console::FG_RED);
+
 			return self::EXIT_CODE_ERROR;
 		}
 
 		$this->stdout("Trigger installed for table model '$modelName'", Console::FG_GREEN);
+
 		return self::EXIT_CODE_NORMAL;
 	}
 
@@ -72,17 +77,18 @@ class AuditController extends Controller {
 	 * @return string
 	 */
 	protected function getTriggerMySQL($tableName, $db) {
-		$tableSchema = $db->getTableSchema($tableName);
+		$tableSchema   = $db->getTableSchema($tableName);
 		$origTableName = Inflector::slug($tableSchema->name, '_', true);
+		$primary       = $tableSchema->primaryKey[0];
 
 		$beforeJson = "\tSET @beforeJson = SELECT JSON_OBJECT(";
-		$afterJson = "\tSET @afterJson = SELECT JSON_OBJECT(";
+		$afterJson  = "\tSET @afterJson = SELECT JSON_OBJECT(";
 		foreach ($tableSchema->columnNames as $columnName) {
 			$beforeJson .= "'$columnName', OLD.$columnName";
-			$afterJson .= "'$columnName', NEW.$columnName";
+			$afterJson  .= "'$columnName', NEW.$columnName";
 		}
 		$beforeJson .= ");\n";
-		$afterJson .= ");\n";
+		$afterJson  .= ");\n";
 
 		$trigger = <<<SQL
 DELIMITER $$
@@ -96,6 +102,7 @@ BEGIN
 	INSERT INTO {{%audit_logged_actions}} (
 		[[schema_name]],
 		[[table_name]],
+		[[relation_id]],
 		[[action]],
 		[[query]],
 		[[data_before]],
@@ -103,6 +110,7 @@ BEGIN
 	) VALUES (
 		'{$tableSchema->schemaName}',
 		'{$tableSchema->name}',
+		NEW.[[$primary]],
 		'I',
 		@sql,
 		NULL,
@@ -120,6 +128,7 @@ BEGIN
 	INSERT INTO {{%audit_logged_actions}} (
 		[[schema_name]],
 		[[table_name]],
+		[[relation_id]],
 		[[action]],
 		[[query]],
 		[[data_before]],
@@ -127,6 +136,7 @@ BEGIN
 	) VALUES (
 		'{$tableSchema->schemaName}',
 		'{$tableSchema->name}',
+		OLD.[[$primary]],
 		'U',
 		@sql,
 		@beforeJson,
@@ -143,6 +153,7 @@ BEGIN
 	INSERT INTO {{%audit_logged_actions}} (
 		[[schema_name]],
 		[[table_name]],
+		[[relation_id]],
 		[[action]],
 		[[query]],
 		[[data_before]],
@@ -150,6 +161,7 @@ BEGIN
 	) VALUES (
 		'{$tableSchema->schemaName}',
 		'{$tableSchema->name}',
+		OLD.[[$primary]],
 		'D',
 		@sql,
 		@beforeJson,
@@ -160,6 +172,7 @@ END$$
 
 DELIMITER ;
 SQL;
+
 		return $trigger;
 	}
 
@@ -172,8 +185,9 @@ SQL;
 	 * @return string
 	 */
 	protected function getTriggerMSSQL($tableName, $db) {
-		$tableSchema = $db->getTableSchema($tableName);
+		$tableSchema   = $db->getTableSchema($tableName);
 		$origTableName = Inflector::slug($tableSchema->name, '_', true);
+		$primary       = $tableSchema->primaryKey[0];
 
 		$trigger = <<<SQL
 CREATE TRIGGER {{%log_action_{$origTableName}}} ON $tableName AFTER INSERT, UPDATE, DELETE AS
@@ -213,6 +227,7 @@ BEGIN
 	INSERT INTO {{%audit_logged_actions}} (
 		[[schema_name]],
 		[[table_name]],
+		[[relation_id]],
 		[[action]],
 		[[query]],
 		[[data_before]],
@@ -220,6 +235,7 @@ BEGIN
 	) VALUES (
 		'{$tableSchema->schemaName}',
 		'{$tableSchema->name}',
+		IIF(DELETED.[[$primary]], DELETED.[[$primary]], INSERTED.[[$primary]]),
 		@action,
 		@sql,
 		@beforeJson,
@@ -227,6 +243,7 @@ BEGIN
 	)
 END
 SQL;
+
 		return $trigger;
 	}
 }
