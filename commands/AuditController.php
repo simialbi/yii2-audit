@@ -210,6 +210,12 @@ BEGIN
 		  	END
 	END
 	
+	SET @primary = (SELECT [[$primary]] FROM DELETED)
+	IF NOT EXISTS(SELECT * FROM DELETED)
+	BEGIN
+		SET @primary = (SELECT [[$primary]] FROM INSERTED)
+	END
+	
 	SET @sql = 'DBCC INPUTBUFFER(' + CAST(@@SPID AS nvarchar(100)) + ')'
 	CREATE TABLE #SQL (
 	    EventType varchar(100),
@@ -224,7 +230,6 @@ BEGIN
 
 	SET @beforeJson = (SELECT * FROM DELETED FOR JSON AUTO)
 	SET @afterJson = (SELECT * FROM INSERTED FOR JSON AUTO)
-	SET @primary = (SELECT CAST(COALESCE(DELETED.[[$primary]], INSERTED.[[$primary]]) AS NVARCHAR(255)) FROM DELETED, INSERTED)
 			
 	INSERT INTO {{%audit_logged_actions}} (
 		[[schema_name]],
