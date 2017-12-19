@@ -75,6 +75,24 @@ class LogAction extends ActiveRecord {
 	/**
 	 * @inheritdoc
 	 */
+	public function attributeLabels() {
+		return [
+			'event_id'    => Yii::t('simialbi/audit/model/log-action', 'Event id'),
+			'schema_name' => Yii::t('simialbi/audit/model/log-action', 'Schema name'),
+			'table_name'  => Yii::t('simialbi/audit/model/log-action', 'Table name'),
+			'relation_id' => Yii::t('simialbi/audit/model/log-action', 'Relation id'),
+			'action'      => Yii::t('simialbi/audit/model/log-action', 'Action'),
+			'query'       => Yii::t('simialbi/audit/model/log-action', 'Query'),
+			'data_before' => Yii::t('simialbi/audit/model/log-action', 'Data before'),
+			'data_after'  => Yii::t('simialbi/audit/model/log-action', 'Data after'),
+			'changed_by'  => Yii::t('simialbi/audit/model/log-action', 'Changed by'),
+			'changed_at'  => Yii::t('simialbi/audit/model/log-action', 'Changed at')
+		];
+	}
+
+	/**
+	 * @inheritdoc
+	 */
 	public function afterFind() {
 		try {
 			$this->data_before = @Json::decode((string) $this->data_before);

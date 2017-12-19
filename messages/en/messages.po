@@ -1,0 +1,79 @@
+#: views/administration/index.php
+msgctxt "simialbi/audit/administration"
+msgid "Audit Administration"
+msgstr "Audit Administration"
+
+#: views/administration/index.php
+msgctxt "simialbi/audit/administration"
+msgid "Restore"
+msgstr "Restore"
+
+#: views/administration/_log-data.php
+msgctxt "simialbi/audit/administration"
+msgid "Data before"
+msgstr "Data before"
+
+#: views/administration/_log-data.php
+msgctxt "simialbi/audit/administration"
+msgid "Data after"
+msgstr "Data after"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Event id"
+msgstr "Event id"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Schema name"
+msgstr "Schema name"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Table name"
+msgstr "Table name"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Relation id"
+msgstr "Relation id"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Action"
+msgstr "Action"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Query"
+msgstr "Query"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Data before"
+msgstr "Data before"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Data after"
+msgstr "Data after"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Changed by"
+msgstr "Changed by"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Changed at"
+msgstr "Changed at"
+
+#: controllers/AdministrationController.php
+msgctxt "simialbi/audit/notification"
+msgid "Audit <b>{audit}</b> deleted"
+msgstr "Audit <b>{audit}</b> deleted"
+
+#: controllers/AdministrationController.php
+msgctxt "simialbi/audit/notification"
+msgid "Failed to save audit <b>{audit}</b>"
+msgstr "Failed to save audit <b>{audit}</b>"

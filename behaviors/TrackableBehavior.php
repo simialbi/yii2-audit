@@ -1,9 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: karlen
- * Date: 28.10.2017
- * Time: 13:48
+ * @package yii2-audit
+ * @author Simon Karlen <simi.albi@gmail.com>
+ * @version 1.0
  */
 
 namespace simialbi\yii2\audit\behaviors;

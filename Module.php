@@ -39,6 +39,8 @@ class Module extends \simialbi\yii2\base\Module {
 			];
 		}
 
+		$this->registerTranslations();
+
 		parent::init();
 	}
 }

@@ -8,8 +8,11 @@
 
 namespace simialbi\yii2\audit\controllers;
 
+use simialbi\yii2\audit\models\LogAction;
 use simialbi\yii2\audit\models\SearchLogAction;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 use Yii;
 
 class AdministrationController extends Controller {
@@ -17,7 +20,14 @@ class AdministrationController extends Controller {
 	 * @inheritdoc
 	 */
 	public function behaviors() {
-		return [];
+		return [
+			'verbs' => [
+				'class'   => VerbFilter::className(),
+				'actions' => [
+					'delete' => ['post', 'delete']
+				]
+			]
+		];
 	}
 
 	/**
@@ -36,5 +46,63 @@ class AdministrationController extends Controller {
 			'schemas'      => $schema->getSchemaNames(),
 			'tables'       => $schema->getTableNames()
 		]);
+	}
+
+	/**
+	 * Restore audit
+	 *
+	 * @param integer $id
+	 *
+	 * @throws NotFoundHttpException
+	 */
+	public function actionRestore($id) {
+		$model = $this->findModel($id);
+	}
+
+	/**
+	 * Delete audit
+	 *
+	 * @param integer $id
+	 *
+	 * @return \yii\web\Response
+	 *
+	 * @throws \Exception
+	 * @throws \Throwable
+	 */
+	public function actionDelete($id) {
+		$model = $this->findModel($id);
+
+		if ($model->delete()) {
+			Yii::$app->session->addFlash('success', Yii::t(
+				'simialbi/audit/notification',
+				'Audit <b>{audit}</b> deleted',
+				['audit' => $model->table_name.'-'.$model->relation_id]
+			));
+		} else {
+			Yii::$app->session->addFlash('error', Yii::t(
+				'simialbi/audit/notification',
+				'Failed to save audit <b>{audit}</b>',
+				['audit' => $model->table_name.'-'.$model->relation_id]
+			));
+		}
+
+		return $this->redirect(['index']);
+	}
+
+	/**
+	 * Finds the Audit based on its primary key value.
+	 * If the model is not found, a 404 HTTP exception will be thrown.
+	 *
+	 * @param integer $id
+	 *
+	 * @return LogAction the loaded model
+	 * @throws NotFoundHttpException if the model cannot be found
+	 */
+	protected function findModel($id) {
+		if (($model = LogAction::findOne($id)) !== null) {
+			return $model;
+		} else {
+			throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
+		}
 	}
 }

@@ -7,11 +7,14 @@
 /* @var string[] $tables */
 
 use kartik\grid\GridView;
+use yii\bootstrap\Html;
 
+$this->title = Yii::t('simialbi/audit/administration', 'Audit Administration');
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="audit-administration">
-	<h1>Audit Administration</h1>
+	<h1><?=Html::encode($this->title);?></h1>
 
 	<div class="row">
 		<div class="col-xs-12">
@@ -109,7 +112,16 @@ use kartik\grid\GridView;
 						]
 					],
 					[
-						'class' => '\kartik\grid\ActionColumn'
+						'class'    => '\kartik\grid\ActionColumn',
+						'template' => '{restore} {delete}',
+						'buttons'  => [
+							'restore' => function($url) {
+								/* @var string $url */
+								return \yii\bootstrap\Html::a('<span class="glyphicon glyphicon-export"></span>', $url, [
+									'title' => Yii::t('simialbi/audit/administration', 'Restore')
+								]);
+							}
+						]
 					]
 				]
 			]);
