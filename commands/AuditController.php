@@ -210,10 +210,10 @@ BEGIN
 		  	END
 	END
 	
-	SET @primary = (SELECT [[$primary]] FROM DELETED)
+	SET @primary = (SELECT TOP 1 [[$primary]] FROM DELETED)
 	IF NOT EXISTS(SELECT * FROM DELETED)
 	BEGIN
-		SET @primary = (SELECT [[$primary]] FROM INSERTED)
+		SET @primary = (SELECT TOP 1 [[$primary]] FROM INSERTED)
 	END
 	
 	SET @sql = 'DBCC INPUTBUFFER(' + CAST(@@SPID AS nvarchar(100)) + ')'

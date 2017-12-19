@@ -9,10 +9,13 @@
 namespace simialbi\yii2\audit\models;
 
 
+use yii\base\InvalidParamException;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use Yii;
+use yii\db\Expression;
+use yii\helpers\Json;
 
 /**
  * Class LogAction
@@ -44,8 +47,7 @@ class LogAction extends ActiveRecord {
 		return [
 			[['event_id', 'changed_by'], 'integer'],
 			[['schema_name', 'table_name', 'action', 'query', 'relation_id'], 'string'],
-			[['data_before', 'data_after'], 'safe'],
-			[['changed_at'], 'datetime', 'format' => 'yyyy-MM-dd HH:mm:ss']
+			[['data_before', 'data_after', 'changed_at'], 'safe']
 		];
 	}
 
@@ -64,9 +66,23 @@ class LogAction extends ActiveRecord {
 				'updatedAtAttribute' => null,
 				'attributes'         => ['changed_at'],
 				'value'              => function() {
-					return Yii::$app->formatter->asDatetime('now', 'yyyy-MM-dd HH:mm:ss');
+					return new Expression('CURRENT_TIMESTAMP');
 				}
 			]
 		];
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function afterFind() {
+		try {
+			$this->data_before = @Json::decode((string) $this->data_before);
+			$this->data_after  = @Json::decode((string) $this->data_after);
+		} catch (InvalidParamException $e) {
+			Yii::warning($e->getMessage(), static::className());
+		}
+
+		parent::afterFind();
 	}
 }
