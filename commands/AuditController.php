@@ -230,6 +230,9 @@ BEGIN
 
 	SET @beforeJson = (SELECT * FROM DELETED FOR JSON AUTO)
 	SET @afterJson = (SELECT * FROM INSERTED FOR JSON AUTO)
+	-- Remove array brackets left and right
+	SET @beforeJson = (SELECT SUBSTRING(@beforeJson, 2, LEN(@beforeJson) - 2))
+	SET @afterJson = (SELECT SUBSTRING(@afterJson, 2, LEN(@afterJson) - 2))
 			
 	INSERT INTO {{%audit_logged_actions}} (
 		[[schema_name]],
