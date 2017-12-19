@@ -16,10 +16,12 @@
 	],
 	"prefer-stable": true,
 	"require": {
+		"php": ">=5.4.0",
 		"yiisoft/yii2": "~2.0",
 		"yiisoft/yii2-bootstrap": "~2.0",
 		"kartik-v/yii2-grid": "~3.1",
-		"kartik-v/yii2-widget-datetimepicker": "~1.4"
+		"kartik-v/yii2-widget-datetimepicker": "~1.4",
+		"simialbi/yii2-simialbi-base": "*"
 	},
 	"repositories": [
 		{

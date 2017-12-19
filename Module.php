@@ -7,9 +7,10 @@
 
 namespace simialbi\yii2\audit;
 
+use yii\base\BootstrapInterface;
 use Yii;
 
-class Module extends \yii\base\Module {
+class Module extends \simialbi\yii2\base\Module implements BootstrapInterface {
 	/**
 	 * @var string the namespace that controller classes are in.
 	 */
@@ -40,5 +41,20 @@ class Module extends \yii\base\Module {
 		}
 
 		parent::init();
+	}
+
+	/**
+	 * Bootstrap method to be called during application bootstrap stage.
+	 *
+	 * @param \yii\base\Application $app the application currently running
+	 */
+	public function bootstrap($app) {
+		\Yii::setAlias('@tonic', '@vendor/tonic');
+
+		$app->urlManager->addRules([
+			$this->id                                                        => $this->id.'/'.$this->defaultRoute,
+			$this->id.'/<controller:[a-zA-Z0-9\-]+>'                         => $this->id.'/<controller>',
+			$this->id.'/<controller:[a-zA-Z0-9\-]+>/<action:[a-zA-Z0-9\-]+>' => $this->id.'/<controller>/<action>'
+		], false);
 	}
 }
