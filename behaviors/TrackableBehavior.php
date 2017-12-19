@@ -57,8 +57,11 @@ class TrackableBehavior extends Behavior {
 
 	/**
 	 * @param AfterSaveEvent $event
+	 *
+	 * @throws \yii\base\InvalidConfigException
+	 * @throws \yii\db\Exception
 	 */
-	protected function updateUser($event) {
+	public function updateUser($event) {
 		$model   = $this->owner;
 		$primary = ($event->name === ActiveRecord::EVENT_AFTER_INSERT)
 			? $model->getPrimaryKey(false)
@@ -91,8 +94,11 @@ class TrackableBehavior extends Behavior {
 	 * @param AfterSaveEvent $event
 	 *
 	 * @return boolean
+	 *
+	 * @throws \yii\base\InvalidConfigException
+	 * @throws \yii\db\Exception
 	 */
-	protected function logAction($event) {
+	public function logAction($event) {
 		$model  = $this->owner;
 		$schema = $model::getTableSchema();
 		$action = null;
