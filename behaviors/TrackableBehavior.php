@@ -123,13 +123,17 @@ class TrackableBehavior extends Behavior {
 		$logAction = new LogAction([
 			'schema_name' => $schema->schemaName,
 			'table_name'  => $schema->name,
-			'relation_id' => is_array($relation_ids) ? Json::encode($relation_ids) : $relation_ids,
+			'relation_id' => is_array($relation_ids) ? Json::encode($relation_ids) : (string) $relation_ids,
 			'action'      => $action,
 			'query'       => $query,
 			'data_before' => $action === 'I' ? null : Json::encode($model->oldAttributes),
 			'data_after'  => $action === 'D' ? null : Json::encode($model->attributes)
 		]);
 
-		return $logAction->save();
+		if (false === ($save = $logAction->save())) {
+			Yii::trace($logAction->errors, self::className());
+		}
+
+		return $save;
 	}
 }
