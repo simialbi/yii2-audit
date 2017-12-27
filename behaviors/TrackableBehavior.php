@@ -123,7 +123,7 @@ class TrackableBehavior extends Behavior {
 		$logAction = new LogAction([
 			'schema_name' => $schema->schemaName,
 			'table_name'  => $schema->name,
-			'relation_id' => is_array($relation_ids) ? array_shift($relation_ids) : $relation_ids,
+			'relation_id' => is_array($relation_ids) ? Json::encode($relation_ids) : $relation_ids,
 			'action'      => $action,
 			'query'       => $query,
 			'data_before' => $action === 'I' ? null : Json::encode($model->oldAttributes),
