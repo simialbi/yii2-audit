@@ -7,6 +7,12 @@ use yii\widgets\DetailView;
 
 ?>
 <div class="row">
+	<div class="col-xs-12">
+		<h3><?=Yii::t('simialbi/audit/administration', 'Query')?></h3>
+		<p><?=$model->query;?></p>
+	</div>
+</div>
+<div class="row">
 	<div class="col-xs-6">
 		<h3><?=Yii::t('simialbi/audit/administration', 'Data before')?></h3>
 		<?php

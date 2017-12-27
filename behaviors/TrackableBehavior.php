@@ -11,6 +11,7 @@ use simialbi\yii2\audit\models\LogAction;
 use yii\base\Behavior;
 use yii\db\ActiveRecord;
 use yii\db\AfterSaveEvent;
+use yii\helpers\Json;
 use Yii;
 
 /**
@@ -122,8 +123,8 @@ class TrackableBehavior extends Behavior {
 			'table_name'  => $schema->name,
 			'action'      => $action,
 			'query'       => $query,
-			'data_before' => $model->oldAttributes,
-			'data_after'  => $model->attributes
+			'data_before' => $action === 'I' ? null : Json::encode($model->oldAttributes),
+			'data_after'  => $action === 'D' ? null : Json::encode($model->attributes)
 		]);
 
 		return $logAction->save();

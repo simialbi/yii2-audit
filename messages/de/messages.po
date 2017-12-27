@@ -10,6 +10,11 @@ msgstr "Wiederherstellen"
 
 #: views/administration/_log-data.php
 msgctxt "simialbi/audit/administration"
+msgid "Query"
+msgstr "Query"
+
+#: views/administration/_log-data.php
+msgctxt "simialbi/audit/administration"
 msgid "Data before"
 msgstr "Vorher"
 

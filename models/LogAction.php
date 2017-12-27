@@ -57,14 +57,14 @@ class LogAction extends ActiveRecord {
 	public function behaviors() {
 		return [
 			'blameable' => [
-				'class'      => BlameableBehavior::className(),
-				'attributes' => ['changed_by']
+				'class'              => BlameableBehavior::className(),
+				'createdByAttribute' => 'changed_by',
+				'updatedByAttribute' => 'changed_by'
 			],
 			'timestamp' => [
 				'class'              => TimestampBehavior::className(),
 				'createdAtAttribute' => 'changed_at',
 				'updatedAtAttribute' => null,
-				'attributes'         => ['changed_at'],
 				'value'              => function() {
 					return new Expression('CURRENT_TIMESTAMP');
 				}
