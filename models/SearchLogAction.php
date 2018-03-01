@@ -50,18 +50,18 @@ class SearchLogAction extends LogAction {
 		}
 
 		$query->andFilterWhere([
-			self::tableName().'.[[event_id]]'    => $this->event_id,
-			self::tableName().'.[[schema_name]]' => $this->schema_name,
-			self::tableName().'.[[table_name]]'  => $this->table_name,
-			self::tableName().'.[[relation_id]]' => $this->relation_id,
-			self::tableName().'.[[action]]'      => $this->action,
-			self::tableName().'.[[changed_by]]'  => $this->changed_by,
-			self::tableName().'.[[changed_at]]'  => $this->changed_at
+			self::tableName() . '.[[event_id]]'    => $this->event_id,
+			self::tableName() . '.[[schema_name]]' => $this->schema_name,
+			self::tableName() . '.[[table_name]]'  => $this->table_name,
+			self::tableName() . '.[[relation_id]]' => $this->relation_id,
+			self::tableName() . '.[[action]]'      => $this->action,
+			self::tableName() . '.[[changed_by]]'  => $this->changed_by,
+			self::tableName() . '.[[changed_at]]'  => $this->changed_at
 		]);
 
-		$query->andFilterWhere(['like', self::tableName().'.[[query]]', $this->query])
-		      ->andFilterWhere(['like', self::tableName().'.[[data_before]]', $this->data_before])
-		      ->andFilterWhere(['like', self::tableName().'.[[data_after]]', $this->data_after]);
+		$query->andFilterWhere(['like', self::tableName() . '.[[query]]', $this->query])
+			  ->andFilterWhere(['like', self::tableName() . '.[[data_before]]', $this->data_before])
+			  ->andFilterWhere(['like', self::tableName() . '.[[data_after]]', $this->data_after]);
 
 		return $dataProvider;
 	}

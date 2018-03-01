@@ -110,11 +110,15 @@ class TrackableBehavior extends Behavior {
 				break;
 			case ActiveRecord::EVENT_AFTER_UPDATE:
 				$action = 'U';
-				$query  = $model::getDb()->createCommand()->update($schema->name, $model->attributes, $model->getOldPrimaryKey(true))->rawSql;
+				$query  = $model::getDb()
+								->createCommand()
+								->update($schema->name, $model->attributes, $model->getOldPrimaryKey(true))->rawSql;
 				break;
 			case ActiveRecord::EVENT_AFTER_DELETE:
 				$action = 'D';
-				$query  = $model::getDb()->createCommand()->delete($schema->name, $model->getOldPrimaryKey(true))->rawSql;
+				$query  = $model::getDb()
+								->createCommand()
+								->delete($schema->name, $model->getOldPrimaryKey(true))->rawSql;
 				break;
 		}
 
@@ -123,7 +127,7 @@ class TrackableBehavior extends Behavior {
 		$logAction = new LogAction([
 			'schema_name' => $schema->schemaName,
 			'table_name'  => $schema->name,
-			'relation_id' => is_array($relation_ids) ? Json::encode($relation_ids) : (string) $relation_ids,
+			'relation_id' => is_array($relation_ids) ? Json::encode($relation_ids) : (string)$relation_ids,
 			'action'      => $action,
 			'query'       => $query,
 			'data_before' => $action === 'I' ? null : Json::encode($model->oldAttributes),

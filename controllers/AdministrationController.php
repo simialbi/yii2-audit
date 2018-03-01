@@ -40,11 +40,37 @@ class AdministrationController extends Controller {
 
 		$schema = Yii::$app->db->getSchema();
 
+		$users      = [];
+		$primaryKey = '';
+		if ($this->module->userClass && class_exists($this->module->userClass)) {
+			$class = $this->module->userClass;
+			$data  = $class::find()->where($this->module->userCondition)->all();
+
+			if ($this->module->userIdField) {
+				$primaryKey = $this->module->userIdField;
+			} else {
+				// TODO: From class
+			}
+
+			foreach ($data as $row) {
+				/* @var $row \yii\db\ActiveRecord */
+				$row    = $row->toArray();
+				/* @var $row array */
+				$search = array_combine(array_map(function ($el) {
+					return '{' . $el . '}';
+				}, array_keys($row)), $row);
+
+				$users[$row[$primaryKey]] = strtr($this->module->userTemplate, $search);
+			}
+		}
+
 		return $this->render('index', [
 			'searchModel'  => $searchModel,
 			'dataProvider' => $dataProvider,
 			'schemas'      => $schema->getSchemaNames(),
-			'tables'       => $schema->getTableNames()
+			'tables'       => $schema->getTableNames(),
+			'users'        => $users,
+			'primaryKey'   => $primaryKey
 		]);
 	}
 
@@ -56,7 +82,7 @@ class AdministrationController extends Controller {
 	 * @throws NotFoundHttpException
 	 */
 	public function actionRestore($id) {
-		$model = $this->findModel($id);
+		$model = $this->findModel($id); // TODO
 	}
 
 	/**
@@ -76,13 +102,13 @@ class AdministrationController extends Controller {
 			Yii::$app->session->addFlash('success', Yii::t(
 				'simialbi/audit/notification',
 				'Audit <b>{audit}</b> deleted',
-				['audit' => $model->table_name.'-'.$model->relation_id]
+				['audit' => $model->table_name . '-' . $model->relation_id]
 			));
 		} else {
 			Yii::$app->session->addFlash('error', Yii::t(
 				'simialbi/audit/notification',
 				'Failed to save audit <b>{audit}</b>',
-				['audit' => $model->table_name.'-'.$model->relation_id]
+				['audit' => $model->table_name . '-' . $model->relation_id]
 			));
 		}
 

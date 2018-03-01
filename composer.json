@@ -1,7 +1,10 @@
 {
 	"name": "simialbi/yii2-audit",
 	"description": "Audit",
-	"keywords": ["yii2", "elfinder"],
+	"keywords": [
+		"yii2",
+		"elfinder"
+	],
 	"type": "yii2-extension",
 	"license": "MIT",
 	"support": {
@@ -37,6 +40,8 @@
 		}
 	},
 	"autoload": {
-		"psr-4": { "simialbi\\yii2\\audit\\": "" }
+		"psr-4": {
+			"simialbi\\yii2\\audit\\": ""
+		}
 	}
 }

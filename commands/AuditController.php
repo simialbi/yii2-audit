@@ -57,7 +57,7 @@ class AuditController extends Controller {
 		try {
 			$db->createCommand($trigger)->execute();
 		} catch (Exception $e) {
-			$this->stderr("An error occured: '".$e->getMessage()."'", Console::FG_RED);
+			$this->stderr("An error occured: '" . $e->getMessage() . "'", Console::FG_RED);
 
 			return self::EXIT_CODE_ERROR;
 		}

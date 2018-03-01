@@ -6,15 +6,17 @@
 /* @var string[] $schemas */
 /* @var string[] $tables */
 
+/* @var string $primaryKey */
+
 use kartik\grid\GridView;
 use yii\bootstrap\Html;
 
-$this->title = Yii::t('simialbi/audit/administration', 'Audit Administration');
+$this->title                   = Yii::t('simialbi/audit/administration', 'Audit Administration');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="audit-administration">
-	<h1><?=Html::encode($this->title);?></h1>
+	<h1><?= Html::encode($this->title); ?></h1>
 
 	<div class="row">
 		<div class="col-xs-12">
@@ -28,10 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
 					],
 					[
 						'class'  => '\kartik\grid\ExpandRowColumn',
-						'value'  => function() {
+						'value'  => function () {
 							return GridView::ROW_COLLAPSED;
 						},
-						'detail' => function($model) {
+						'detail' => function ($model) {
 							/* @var $model \simialbi\yii2\audit\models\LogAction */
 							return Yii::$app->controller->renderPartial('_log-data', [
 								'model' => $model
@@ -88,7 +90,12 @@ $this->params['breadcrumbs'][] = $this->title;
 					[
 						'class'               => '\kartik\grid\DataColumn',
 						'attribute'           => 'changed_by',
-						'filter'              => [],
+						'value'               => function ($model) use ($users, $primaryKey) {
+							return (array_key_exists($model->changed_by, $users))
+								? $users[$model->$primaryKey]
+								: $model->changed_by;
+						},
+						'filter'              => $users,
 						'filterType'          => GridView::FILTER_SELECT2,
 						'filterWidgetOptions' => [
 							'options'       => [
@@ -115,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
 						'class'    => '\kartik\grid\ActionColumn',
 						'template' => '{restore} {delete}',
 						'buttons'  => [
-							'restore' => function($url) {
+							'restore' => function ($url) {
 								/* @var string $url */
 								return \yii\bootstrap\Html::a('<span class="glyphicon glyphicon-export"></span>', $url, [
 									'title' => Yii::t('simialbi/audit/administration', 'Restore')

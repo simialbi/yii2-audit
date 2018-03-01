@@ -65,7 +65,7 @@ class LogAction extends ActiveRecord {
 				'class'              => TimestampBehavior::className(),
 				'createdAtAttribute' => 'changed_at',
 				'updatedAtAttribute' => null,
-				'value'              => function() {
+				'value'              => function () {
 					return new Expression('CURRENT_TIMESTAMP');
 				}
 			]
@@ -95,8 +95,8 @@ class LogAction extends ActiveRecord {
 	 */
 	public function afterFind() {
 		try {
-			$this->data_before = @Json::decode((string) $this->data_before);
-			$this->data_after  = @Json::decode((string) $this->data_after);
+			$this->data_before = @Json::decode((string)$this->data_before);
+			$this->data_after  = @Json::decode((string)$this->data_after);
 		} catch (InvalidParamException $e) {
 			Yii::warning($e->getMessage(), static::className());
 		}
