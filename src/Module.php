@@ -19,10 +19,19 @@ class Module extends \simialbi\yii2\base\Module {
 	 * @var string the default route of this module.
 	 */
 	public $defaultRoute = 'administration';
+	/**
+	 * @var string|array|\yii\db\ExpressionInterface
+	 */
+	public $userCondition;
+	/**
+	 * @var string
+	 */
+	public $userDisplayField;
 
 	/**
 	 * @inheritdoc
 	 * @throws \yii\base\Exception
+	 * @throws \ReflectionException
 	 */
 	public function init() {
 		if (!Yii::$app->hasModule('gridview')) {

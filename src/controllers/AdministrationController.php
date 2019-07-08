@@ -10,11 +10,17 @@ namespace simialbi\yii2\audit\controllers;
 
 use simialbi\yii2\audit\models\LogAction;
 use simialbi\yii2\audit\models\SearchLogAction;
+use Yii;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use Yii;
 
+/**
+ * Class AdministrationController
+ * @package simialbi\yii2\audit\controllers
+ *
+ * @property-read \simialbi\yii2\audit\Module $module
+ */
 class AdministrationController extends Controller {
 	/**
 	 * @inheritdoc
@@ -22,7 +28,7 @@ class AdministrationController extends Controller {
 	public function behaviors() {
 		return [
 			'verbs' => [
-				'class'   => VerbFilter::className(),
+				'class'   => VerbFilter::class,
 				'actions' => [
 					'delete' => ['post', 'delete']
 				]
@@ -40,27 +46,19 @@ class AdministrationController extends Controller {
 
 		$schema = Yii::$app->db->getSchema();
 
-		$users      = [];
-		$primaryKey = '';
-		if ($this->module->userClass && class_exists($this->module->userClass)) {
-			$class = $this->module->userClass;
-			$data  = $class::find()->where($this->module->userCondition)->all();
+		$users = [];
+		$class = Yii::$app->user->identityClass;
+		/** @var $class \yii\db\ActiveRecord */
+		if ($class && class_exists($class) && method_exists($class, 'find') && $this->module->userDisplayField) {
+			$query = $class::find();
 
-			if ($this->module->userIdField) {
-				$primaryKey = $this->module->userIdField;
-			} else {
-				// TODO: From class
+			if ($this->module->userCondition) {
+				$query->where($this->module->userCondition);
 			}
 
-			foreach ($data as $row) {
-				/* @var $row \yii\db\ActiveRecord */
-				$row    = $row->toArray();
-				/* @var $row array */
-				$search = array_combine(array_map(function ($el) {
-					return '{' . $el . '}';
-				}, array_keys($row)), $row);
-
-				$users[$row[$primaryKey]] = strtr($this->module->userTemplate, $search);
+			foreach ($query->all() as $user) {
+				/** @var $user \yii\web\IdentityInterface */
+				$users[$user->getId()] = $user->{$this->module->userDisplayField};
 			}
 		}
 
@@ -70,7 +68,7 @@ class AdministrationController extends Controller {
 			'schemas'      => $schema->getSchemaNames(),
 			'tables'       => $schema->getTableNames(),
 			'users'        => $users,
-			'primaryKey'   => $primaryKey
+			'displayField' => $this->module->userDisplayField
 		]);
 	}
 

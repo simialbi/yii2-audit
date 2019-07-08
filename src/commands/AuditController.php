@@ -8,6 +8,7 @@
 namespace simialbi\yii2\audit\commands;
 
 use yii\console\Controller;
+use yii\console\ExitCode;
 use yii\db\Exception;
 use yii\helpers\Console;
 use yii\helpers\Inflector;
@@ -24,13 +25,13 @@ class AuditController extends Controller {
 		if (!class_exists($modelName)) {
 			$this->stderr("Class '$modelName' does not exists", Console::FG_RED);
 
-			return self::EXIT_CODE_ERROR;
+			return ExitCode::DATAERR;
 		}
 		$model = new $modelName;
 		if (!($model instanceof \yii\db\ActiveRecord)) {
 			$this->stderr("Class '$modelName' must extend '\yii\db\ActiveRecord'", Console::FG_RED);
 
-			return self::EXIT_CODE_ERROR;
+			return ExitCode::DATAERR;
 		}
 
 		/* @var $modelName \yii\db\ActiveRecord */
@@ -51,7 +52,7 @@ class AuditController extends Controller {
 			default:
 				$this->stderr("Driver '{$db->driverName}' is not yet supported", Console::FG_YELLOW);
 
-				return self::EXIT_CODE_ERROR;
+				return ExitCode::USAGE;
 		}
 
 		try {
@@ -59,12 +60,12 @@ class AuditController extends Controller {
 		} catch (Exception $e) {
 			$this->stderr("An error occured: '" . $e->getMessage() . "'", Console::FG_RED);
 
-			return self::EXIT_CODE_ERROR;
+			return ExitCode::SOFTWARE;
 		}
 
 		$this->stdout("Trigger installed for table model '$modelName'", Console::FG_GREEN);
 
-		return self::EXIT_CODE_NORMAL;
+		return ExitCode::OK;
 	}
 
 	/**

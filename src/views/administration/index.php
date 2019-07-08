@@ -1,15 +1,15 @@
 <?php
 
+use kartik\grid\GridView;
+use yii\helpers\Html;
+
 /* @var $this \yii\web\View */
 /* @var $searchModel \simialbi\yii2\audit\models\SearchLogAction */
 /* @var $dataProvider \yii\data\ActiveDataProvider */
 /* @var string[] $schemas */
 /* @var string[] $tables */
-
-/* @var string $primaryKey */
-
-use kartik\grid\GridView;
-use yii\bootstrap\Html;
+/* @var array $users */
+/* @var string $displayField */
 
 $this->title                   = Yii::t('simialbi/audit/administration', 'Audit Administration');
 $this->params['breadcrumbs'][] = $this->title;
@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	<h1><?= Html::encode($this->title); ?></h1>
 
 	<div class="row">
-		<div class="col-xs-12">
+		<div class="col-12 col-xs-12">
 			<?php
 			echo GridView::widget([
 				'filterModel'  => $searchModel,
@@ -90,9 +90,9 @@ $this->params['breadcrumbs'][] = $this->title;
 					[
 						'class'               => '\kartik\grid\DataColumn',
 						'attribute'           => 'changed_by',
-						'value'               => function ($model) use ($users, $primaryKey) {
-							return (array_key_exists($model->changed_by, $users))
-								? $users[$model->$primaryKey]
+						'value'               => function ($model) use ($displayField) {
+							return $displayField
+								? call_user_func([Yii::$app->user->identityClass, 'findIdentity'], $model->changed_by)->$displayField
 								: $model->changed_by;
 						},
 						'filter'              => $users,
@@ -124,7 +124,7 @@ $this->params['breadcrumbs'][] = $this->title;
 						'buttons'  => [
 							'restore' => function ($url) {
 								/* @var string $url */
-								return \yii\bootstrap\Html::a('<span class="glyphicon glyphicon-export"></span>', $url, [
+								return Html::a('<i class="fas fa-upload"></i>', $url, [
 									'title' => Yii::t('simialbi/audit/administration', 'Restore')
 								]);
 							}
