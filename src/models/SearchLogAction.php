@@ -52,7 +52,7 @@ class SearchLogAction extends LogAction {
 		$query->andFilterWhere([
 			self::tableName() . '.[[event_id]]'    => $this->event_id,
 			self::tableName() . '.[[schema_name]]' => $this->schema_name,
-			self::tableName() . '.[[table_name]]'  => $this->table_name,
+			self::tableName() . '.[[table_name]]'  => $this::getDb()->schema->unquoteSimpleTableName($this->table_name),
 			self::tableName() . '.[[relation_id]]' => $this->relation_id,
 			self::tableName() . '.[[action]]'      => $this->action,
 			self::tableName() . '.[[changed_by]]'  => $this->changed_by,

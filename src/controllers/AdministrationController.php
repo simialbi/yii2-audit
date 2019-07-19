@@ -81,6 +81,21 @@ class AdministrationController extends Controller {
 	 */
 	public function actionRestore($id) {
 		$model = $this->findModel($id); // TODO
+
+		$schema = $model::getDb()->getTableSchema($model->table_name);
+
+		echo "<pre>";
+		var_dump($schema);
+		exit("</pre>");
+
+		switch ($model->action) {
+			case LogAction::ACTION_INSERT:
+				break;
+			case LogAction::ACTION_UPDATE:
+				break;
+			case LogAction::ACTION_DELETE:
+				break;
+		}
 	}
 
 	/**

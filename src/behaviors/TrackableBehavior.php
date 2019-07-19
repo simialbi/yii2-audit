@@ -105,17 +105,17 @@ class TrackableBehavior extends Behavior {
 		$query  = null;
 		switch ($event->name) {
 			case ActiveRecord::EVENT_AFTER_INSERT:
-				$action = 'I';
+				$action = LogAction::ACTION_INSERT;
 				$query  = $model::getDb()->createCommand()->insert($schema->name, $model->attributes)->rawSql;
 				break;
 			case ActiveRecord::EVENT_AFTER_UPDATE:
-				$action = 'U';
+				$action = LogAction::ACTION_UPDATE;
 				$query  = $model::getDb()
 								->createCommand()
 								->update($schema->name, $model->attributes, $model->getOldPrimaryKey(true))->rawSql;
 				break;
 			case ActiveRecord::EVENT_AFTER_DELETE:
-				$action = 'D';
+				$action = LogAction::ACTION_DELETE;
 				$query  = $model::getDb()
 								->createCommand()
 								->delete($schema->name, $model->getOldPrimaryKey(true))->rawSql;
@@ -130,12 +130,12 @@ class TrackableBehavior extends Behavior {
 			'relation_id' => is_array($relation_ids) ? Json::encode($relation_ids) : (string)$relation_ids,
 			'action'      => $action,
 			'query'       => $query,
-			'data_before' => $action === 'I' ? null : Json::encode($model->oldAttributes),
-			'data_after'  => $action === 'D' ? null : Json::encode($model->attributes)
+			'data_before' => $action === LogAction::ACTION_INSERT ? null : Json::encode($model->oldAttributes),
+			'data_after'  => $action === LogAction::ACTION_DELETE ? null : Json::encode($model->attributes)
 		]);
 
 		if (false === ($save = $logAction->save())) {
-			Yii::trace($logAction->errors, self::className());
+			Yii::debug($logAction->errors, self::class);
 		}
 
 		return $save;

@@ -9,7 +9,7 @@
 namespace simialbi\yii2\audit\models;
 
 
-use yii\base\InvalidParamException;
+use yii\base\InvalidArgumentException;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -33,6 +33,10 @@ use yii\helpers\Json;
  * @property string $changed_at
  */
 class LogAction extends ActiveRecord {
+	const ACTION_INSERT = 'I';
+	const ACTION_UPDATE = 'U';
+	const ACTION_DELETE = 'D';
+
 	/**
 	 * @inheritdoc
 	 */
@@ -57,12 +61,12 @@ class LogAction extends ActiveRecord {
 	public function behaviors() {
 		return [
 			'blameable' => [
-				'class'              => BlameableBehavior::className(),
+				'class'              => BlameableBehavior::class,
 				'createdByAttribute' => 'changed_by',
 				'updatedByAttribute' => 'changed_by'
 			],
 			'timestamp' => [
-				'class'              => TimestampBehavior::className(),
+				'class'              => TimestampBehavior::class,
 				'createdAtAttribute' => 'changed_at',
 				'updatedAtAttribute' => null,
 				'value'              => function () {
@@ -97,8 +101,8 @@ class LogAction extends ActiveRecord {
 		try {
 			$this->data_before = @Json::decode((string)$this->data_before);
 			$this->data_after  = @Json::decode((string)$this->data_after);
-		} catch (InvalidParamException $e) {
-			Yii::warning($e->getMessage(), static::className());
+		} catch (InvalidArgumentException $e) {
+			Yii::warning($e->getMessage(), static::class);
 		}
 
 		parent::afterFind();
