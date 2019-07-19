@@ -50,7 +50,7 @@ class TrackableBehavior extends Behavior {
 
 		return [
 			ActiveRecord::EVENT_AFTER_INSERT => 'logAction',
-			ActiveRecord::EVENT_AFTER_UPDATE => 'logAction',
+			ActiveRecord::EVENT_BEFORE_UPDATE => 'logAction',
 			ActiveRecord::EVENT_AFTER_DELETE => 'logAction'
 		];
 	}
@@ -108,7 +108,7 @@ class TrackableBehavior extends Behavior {
 				$action = LogAction::ACTION_INSERT;
 				$query  = $model::getDb()->createCommand()->insert($schema->name, $model->attributes)->rawSql;
 				break;
-			case ActiveRecord::EVENT_AFTER_UPDATE:
+			case ActiveRecord::EVENT_BEFORE_UPDATE:
 				$action = LogAction::ACTION_UPDATE;
 				$query  = $model::getDb()
 								->createCommand()

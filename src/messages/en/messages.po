@@ -75,6 +75,11 @@ msgstr "Changed at"
 
 #: controllers/AdministrationController.php
 msgctxt "simialbi/audit/notification"
+msgid "Rolled back audit <b>{audit}</b>"
+msgstr "Rolled back audit <b>{audit}</b>"
+
+#: controllers/AdministrationController.php
+msgctxt "simialbi/audit/notification"
 msgid "Audit <b>{audit}</b> deleted"
 msgstr "Audit <b>{audit}</b> deleted"
 

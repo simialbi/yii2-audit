@@ -125,7 +125,10 @@ $this->params['breadcrumbs'][] = $this->title;
 							'restore' => function ($url) {
 								/* @var string $url */
 								return Html::a('<i class="fas fa-upload"></i>', $url, [
-									'title' => Yii::t('simialbi/audit/administration', 'Restore')
+									'title' => Yii::t('simialbi/audit/administration', 'Restore'),
+									'data'  => [
+										'pjax' => '0'
+									]
 								]);
 							}
 						]

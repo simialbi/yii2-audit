@@ -11,7 +11,9 @@ namespace simialbi\yii2\audit\controllers;
 use simialbi\yii2\audit\models\LogAction;
 use simialbi\yii2\audit\models\SearchLogAction;
 use Yii;
+use yii\db\Exception;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -77,6 +79,7 @@ class AdministrationController extends Controller {
 	 *
 	 * @param integer $id
 	 *
+	 * @return \yii\web\Response
 	 * @throws NotFoundHttpException
 	 */
 	public function actionRestore($id) {
@@ -84,18 +87,58 @@ class AdministrationController extends Controller {
 
 		$schema = $model::getDb()->getTableSchema($model->table_name);
 
-		echo "<pre>";
-		var_dump($schema);
-		exit("</pre>");
+		$transaction = $model::getDb()->beginTransaction();
 
-		switch ($model->action) {
-			case LogAction::ACTION_INSERT:
-				break;
-			case LogAction::ACTION_UPDATE:
-				break;
-			case LogAction::ACTION_DELETE:
-				break;
+		try {
+			switch ($model->action) {
+				case LogAction::ACTION_INSERT:
+					$condition = [];
+
+					foreach ($schema->primaryKey as $primaryKey) {
+						$condition[$primaryKey] = ArrayHelper::getValue($model->data_after, $primaryKey);
+					}
+
+					$model::getDb()->createCommand()->delete($model->table_name, $condition)->execute();
+					break;
+				case LogAction::ACTION_UPDATE:
+					$condition = [];
+					$data      = $model->data_before;
+
+					foreach ($schema->primaryKey as $primaryKey) {
+						$condition[$primaryKey] = ArrayHelper::getValue($model->data_after, $primaryKey);
+						ArrayHelper::remove($data, $primaryKey);
+					}
+
+					$model::getDb()->createCommand()->update($model->table_name, $data, $condition)->execute();
+					break;
+				case LogAction::ACTION_DELETE:
+					$data = $model->data_before;
+
+					if ($model::getDb()->driverName === 'sqlsrv' || $model::getDb()->driverName === 'mssql' ||
+						$model::getDb()->driverName === 'dblib') {
+						$model::getDb()->createCommand("SET IDENTITY_INSERT {{{$model->table_name}}} ON")->execute();
+					}
+					$model::getDb()->createCommand()->insert($model->table_name, $data)->execute();
+					if ($model::getDb()->driverName === 'sqlsrv' || $model::getDb()->driverName === 'mssql' ||
+						$model::getDb()->driverName === 'dblib') {
+						$model::getDb()->createCommand("SET IDENTITY_INSERT {{{$model->table_name}}} OFF")->execute();
+					}
+					break;
+			}
+
+			$transaction->commit();
+
+			Yii::$app->session->addFlash('success', Yii::t(
+				'simialbi/audit/notification',
+				'Rolled back audit <b>{audit}</b>',
+				['audit' => $model->table_name . '-' . $model->relation_id]
+			));
+		} catch (Exception $exception) {
+			Yii::$app->session->addFlash('danger', $exception->getMessage());
+			$transaction->rollBack();
 		}
+
+		return $this->redirect(['index']);
 	}
 
 	/**
@@ -118,7 +161,7 @@ class AdministrationController extends Controller {
 				['audit' => $model->table_name . '-' . $model->relation_id]
 			));
 		} else {
-			Yii::$app->session->addFlash('error', Yii::t(
+			Yii::$app->session->addFlash('danger', Yii::t(
 				'simialbi/audit/notification',
 				'Failed to save audit <b>{audit}</b>',
 				['audit' => $model->table_name . '-' . $model->relation_id]
