@@ -83,7 +83,7 @@ class AdministrationController extends Controller {
 	 * @throws NotFoundHttpException
 	 */
 	public function actionRestore($id) {
-		$model = $this->findModel($id); // TODO
+		$model = $this->findModel($id);
 
 		$schema = $model::getDb()->getTableSchema($model->table_name);
 
