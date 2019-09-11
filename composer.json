@@ -23,7 +23,7 @@
 		"yiisoft/yii2": "^2.0.22",
 		"kartik-v/yii2-grid": "^3.3.2",
 		"kartik-v/yii2-widget-datetimepicker": "^1.4.9",
-		"simialbi/yii2-simialbi-base": "^0.5"
+		"simialbi/yii2-simialbi-base": ">=0.5 <1.0 | ^1.0.0"
 	},
 	"repositories": [
 		{
