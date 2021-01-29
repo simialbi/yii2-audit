@@ -1,0 +1,89 @@
+#: views/administration/index.php
+msgctxt "simialbi/audit/administration"
+msgid "Audit Administration"
+msgstr "Audit administration"
+
+#: views/administration/index.php
+msgctxt "simialbi/audit/administration"
+msgid "Restore"
+msgstr "Récupérer"
+
+#: views/administration/_log-data.php
+msgctxt "simialbi/audit/administration"
+msgid "Query"
+msgstr "Requête"
+
+#: views/administration/_log-data.php
+msgctxt "simialbi/audit/administration"
+msgid "Data before"
+msgstr "Avant"
+
+#: views/administration/_log-data.php
+msgctxt "simialbi/audit/administration"
+msgid "Data after"
+msgstr "Après"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Event id"
+msgstr "ID"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Schema name"
+msgstr "Nom du schéma"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Table name"
+msgstr "Nom du tableau"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Relation id"
+msgstr "ID de la relation"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Action"
+msgstr "Action"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Query"
+msgstr "Requête"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Data before"
+msgstr "Donnée avant"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Data after"
+msgstr "Donnée après"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Changed by"
+msgstr "Modifié par"
+
+#: models/LogAction.php
+msgctxt "simialbi/audit/model/log-action"
+msgid "Changed at"
+msgstr "Modifié le"
+
+#: controllers/AdministrationController.php
+msgctxt "simialbi/audit/notification"
+msgid "Rolled back audit <b>{audit}</b>"
+msgstr "Audit <b>{audit}</b> récupéré"
+
+#: controllers/AdministrationController.php
+msgctxt "simialbi/audit/notification"
+msgid "Audit <b>{audit}</b> deleted"
+msgstr "Audit <b>{audit}</b> supprimé"
+
+#: controllers/AdministrationController.php
+msgctxt "simialbi/audit/notification"
+msgid "Failed to save audit <b>{audit}</b>"
+msgstr "Erreur pendant la suppression de l'audit <b>{audit}</b>"
